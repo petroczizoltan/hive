@@ -26,7 +26,7 @@ class ClassBuilder extends Builder {
   var uint8ListChecker = const TypeChecker.fromRuntime(Uint8List);
 
   @override
-  String buildRead() {
+  String buildRead({ExecutableElement? constructorOverride}) {
     var constr = cls.constructors.firstOrNullWhere((it) => it.name.isEmpty);
     check(constr != null, 'Provide an unnamed constructor.');
 
@@ -38,6 +38,10 @@ class ClassBuilder extends Builder {
       return 'return ${cls.name}();';
     }
 
+    final hasConstructorOverride = constructorOverride != null;
+    final constructorName =
+        hasConstructorOverride ? constructorOverride?.name : null;
+
     var code = StringBuffer();
     code.writeln('''
     final numOfFields = reader.readByte();
@@ -45,27 +49,50 @@ class ClassBuilder extends Builder {
       for (int i = 0; i < numOfFields; i++)
         reader.readByte(): reader.read(),
     };
-    return ${cls.name}(
     ''');
 
-    for (var param in constr.parameters) {
-      var field = fields.firstOrNullWhere((it) => it.name == param.name);
-      // Final fields
-      field ??= getters.firstOrNullWhere((it) => it.name == param.name);
-      if (field != null) {
-        if (param.isNamed) {
-          code.write('${param.name}: ');
+    if (hasConstructorOverride && constructorName != null) {
+      code.write('return ');
+
+      if (constructorOverride!.isStatic) {
+        code.writeln('${constructorOverride.enclosingElement.name}.');
+      }
+
+      code.writeln('$constructorName([');
+    } else {
+      code.writeln('return ${cls.name}(');
+    }
+
+    if (!hasConstructorOverride) {
+      for (var param in constr.parameters) {
+        var field = fields.firstOrNullWhere((it) => it.name == param.name);
+        // Final fields
+        field ??= getters.firstOrNullWhere((it) => it.name == param.name);
+        if (field != null) {
+          if (param.isNamed) {
+            code.write('${param.name}: ');
+          }
+          code.write(_value(
+            param.type,
+            'fields[${field.index}]',
+            field.defaultValue,
+          ));
+          code.writeln(',');
+          fields.remove(field);
         }
-        code.write(_value(
-          param.type,
-          'fields[${field.index}]',
-          field.defaultValue,
-        ));
-        code.writeln(',');
-        fields.remove(field);
       }
     }
 
+    if (hasConstructorOverride) {
+      for (var getter in getters) {
+        code.write('fields[${getter.index}]');
+        code.writeln(',');
+      }
+    }
+
+    if (hasConstructorOverride) {
+      code.write(']');
+    }
     code.writeln(')');
 
     // There may still be fields to initialize that were not in the constructor

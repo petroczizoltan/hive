@@ -7,7 +7,7 @@ class EnumBuilder extends Builder {
       : super(cls, getters);
 
   @override
-  String buildRead() {
+  String buildRead({ExecutableElement? constructorOverride}) {
     check(getters.isNotEmpty, '${cls.name} does not have any enum value.');
 
     var code = StringBuffer();

@@ -11,7 +11,11 @@ dependencies:
   flutter:
     sdk: flutter
 
-  hive: ^2.2.1
+  hive:
+    git:
+      url: https://github.com/petroczizoltan/hive
+      ref: add_custom_constructor_support_to_hive_type
+      path: hive
   path_provider: ^2.0.10
   path: ^1.8.2
 

@@ -12,6 +12,12 @@ environment:
 
 dependency_overrides:
   hive:
-    path: ../
+    git:
+      url: https://github.com/petroczizoltan/hive
+      ref: add_custom_constructor_support_to_hive_type
+      path: hive
   hive_generator:
-    path: ../../hive_generator
+    git:
+      url: https://github.com/petroczizoltan/hive
+      ref: add_custom_constructor_support_to_hive_type
+      path: hive_generator

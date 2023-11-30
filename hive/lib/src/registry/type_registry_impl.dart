@@ -7,7 +7,7 @@ import 'package:meta/meta.dart';
 /// Needed to codegen the TypeRegistry mock
 @visibleForTesting
 class ResolvedAdapter<T> {
-  final TypeAdapter adapter;
+  final BaseTypeAdapter adapter;
   final int typeId;
 
   ResolvedAdapter(this.adapter, this.typeId);
@@ -37,7 +37,7 @@ class _NullTypeRegistry implements TypeRegistryImpl {
       throw UnimplementedError();
 
   @override
-  Never registerAdapter<T>(TypeAdapter<T> adapter,
+  Never registerAdapter<T>(BaseTypeAdapter<T> adapter,
           {bool internal = false, bool override = false}) =>
       throw UnimplementedError();
 
@@ -77,7 +77,7 @@ class TypeRegistryImpl implements TypeRegistry {
 
   @override
   void registerAdapter<T>(
-    TypeAdapter<T> adapter, {
+    BaseTypeAdapter<T> adapter, {
     bool internal = false,
     bool override = false,
   }) {

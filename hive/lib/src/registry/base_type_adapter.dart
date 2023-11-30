@@ -2,12 +2,13 @@ part of hive;
 
 /// Type adapters can be implemented to support non primitive values.
 @immutable
-abstract class TypeAdapter<T> extends BaseTypeAdapter<T> {
+abstract class BaseTypeAdapter<T> {
+  /// Called for type registration
+  int get typeId;
+
   /// Is called when a value has to be decoded.
-  @override
-  T read(BinaryReader reader);
+  dynamic read(BinaryReader reader);
 
   /// Is called when a value has to be encoded.
-  @override
-  void write(BinaryWriter writer, T obj);
+  dynamic write(BinaryWriter writer, T obj);
 }

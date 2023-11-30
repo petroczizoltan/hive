@@ -10,8 +10,12 @@ environment:
 dependencies:
   build: ^2.0.0
   source_gen: ^1.0.0
-  hive: ^2.0.4
-  analyzer: ">=1.0.0 <5.0.0"
+  hive:
+    git:
+      url: https://github.com/petroczizoltan/hive
+      ref: add_custom_constructor_support_to_hive_type
+      path: hive
+  analyzer: ">=5.2.0 <6.0.0"
   source_helper: ^1.1.0
 
 dev_dependencies:

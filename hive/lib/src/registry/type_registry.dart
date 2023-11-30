@@ -12,7 +12,7 @@ abstract class TypeRegistry {
   /// adapters are registered and maintained by hive itself. Use [internal]
   /// parameter only if you want to override exists adapter implementation.
   void registerAdapter<T>(
-    TypeAdapter<T> adapter, {
+    BaseTypeAdapter<T> adapter, {
     bool internal = false,
     bool override = false,
   });

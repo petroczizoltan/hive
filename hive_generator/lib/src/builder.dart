@@ -18,7 +18,7 @@ abstract class Builder {
 
   Builder(this.cls, this.getters, [this.setters = const <AdapterField>[]]);
 
-  String buildRead();
+  String buildRead({ExecutableElement? constructorOverride});
 
   String buildWrite();
 }

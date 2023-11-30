@@ -36,22 +36,35 @@ class TypeAdapterGenerator extends GeneratorForAnnotation<HiveType> {
     var typeId = getTypeId(annotation);
 
     var adapterName = getAdapterName(cls.name, annotation);
-    var builder = cls.isEnum
+    var builder = cls is EnumElement
         ? EnumBuilder(cls, getters)
         : ClassBuilder(cls, getters, setters);
 
+    final constructor = getConstructor(annotation);
+
+    final typeAdapter =
+        isAsyncConstructor(constructor) ? 'AsyncTypeAdapter' : 'TypeAdapter';
+
+    final readReturnType =
+        isAsyncConstructor(constructor) ? 'Future<${cls.name}>' : cls.name;
+    final readAsyncModifier = isAsyncConstructor(constructor) ? 'async' : '';
+
+    final writeReturnType =
+        isAsyncConstructor(constructor) ? 'Future<void>' : 'void';
+    final writeAsyncModifier = isAsyncConstructor(constructor) ? 'async' : '';
+
     return '''
-    class $adapterName extends TypeAdapter<${cls.name}> {
+    class $adapterName extends $typeAdapter<${cls.name}> {
       @override
       final int typeId = $typeId;
 
       @override
-      ${cls.name} read(BinaryReader reader) {
-        ${builder.buildRead()}
+      $readReturnType read(BinaryReader reader) $readAsyncModifier {
+        ${builder.buildRead(constructorOverride: constructor)}
       }
 
       @override
-      void write(BinaryWriter writer, ${cls.name} obj) {
+      $writeReturnType write(BinaryWriter writer, ${cls.name} obj) $writeAsyncModifier {
         ${builder.buildWrite()}
       }
 
@@ -158,6 +171,16 @@ class TypeAdapterGenerator extends GeneratorForAnnotation<HiveType> {
     } else {
       return annAdapterName.stringValue;
     }
+  }
+
+  ExecutableElement? getConstructor(ConstantReader annotation) {
+    final constructorReader = annotation.peek('constructor');
+
+    return constructorReader?.objectValue.toFunctionValue();
+  }
+
+  bool isAsyncConstructor(ExecutableElement? constructor) {
+    return constructor?.returnType.isDartAsyncFuture ?? false;
   }
 
   int getTypeId(ConstantReader annotation) {

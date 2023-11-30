@@ -37,6 +37,8 @@ part 'src/hive_error.dart';
 part 'src/object/hive_collection.dart';
 part 'src/object/hive_list.dart';
 part 'src/object/hive_storage_backend_preference.dart';
+part 'src/registry/async_type_adapter.dart';
+part 'src/registry/base_type_adapter.dart';
 part 'src/registry/type_adapter.dart';
 part 'src/registry/type_registry.dart';
 

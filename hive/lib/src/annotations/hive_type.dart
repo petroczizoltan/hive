@@ -1,22 +1,46 @@
 part of hive;
 
+typedef ConstructorType = dynamic Function(List<dynamic> parameters);
+
 /// Annotate classes with [HiveType] to generate a `TypeAdapter`.
-class HiveType {
+@optionalTypeArgs
+class HiveType<T> {
   /// The typeId of the annotated class.
   final int typeId;
 
   /// The name of the generated adapter.
   final String? adapterName;
 
-  /// This parameter can be used to keep track of old fieldIds which must not
-  /// be reused. The generator will throw an error if a legacy fieldId is
-  /// used again.
-  // final List<int> legacyFieldIds;
+  /// Optional unnamed constructor override.
+  ///
+  /// Should return the class it annotates either sync or async.
+  ///
+  /// E.g.:
+  ///
+  /// ```dart
+  /// @HiveType(constructor: Foo.test)
+  /// class Foo {
+  ///     static Foo test() {
+  ///         // ...
+  ///     }
+  /// }
+  ///
+  /// @HiveType(constructor: Bar.test)
+  /// class Bar {
+  ///     static Future<Bar> test() {
+  ///         // ...
+  ///     }
+  /// }
+  /// ```
+  final ConstructorType? constructor;
 
   /// If [adapterName] is not set, it'll be `"YourClass" + "Adapter"`.
+  /// 
+  /// Use [constructor] to use another function to create the instance
+  /// instead of the unnamed constructor.
   const HiveType({
     required this.typeId,
     this.adapterName,
-    //this.legacyFieldIds,
+    this.constructor,
   });
 }
