@@ -9,5 +9,5 @@ abstract class AsyncTypeAdapter<T> extends BaseTypeAdapter<T> {
 
   /// Is called when a value has to be encoded.
   @override
-  Future<void> write(BinaryWriter writer, T obj);
+  void write(BinaryWriter writer, T obj);
 }

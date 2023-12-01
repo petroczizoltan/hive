@@ -120,12 +120,12 @@ class Keystore<E> {
   }
 
   /// Not part of public API
-  Iterable<E> getValues() {
-    return _store.values.map((e) => e.value as E);
+  Iterable<V> getValues<V>() {
+    return _store.values.map((e) => e.value as V);
   }
 
   /// Not part of public API
-  Iterable<E> getValuesBetween([dynamic startKey, dynamic endKey]) sync* {
+  Iterable<V> getValuesBetween<V>([dynamic startKey, dynamic endKey]) sync* {
     Iterable<Frame> iterable;
     if (startKey != null) {
       iterable = _store.valuesFromKey(startKey);
@@ -134,7 +134,7 @@ class Keystore<E> {
     }
 
     for (var frame in iterable) {
-      yield frame.value as E;
+      yield frame.value as V;
 
       if (frame.key == endKey) break;
     }

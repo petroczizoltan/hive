@@ -27,6 +27,7 @@ part 'src/annotations/hive_field.dart';
 part 'src/annotations/hive_type.dart';
 part 'src/binary/binary_reader.dart';
 part 'src/binary/binary_writer.dart';
+part 'src/box/async_box.dart';
 part 'src/box/box.dart';
 part 'src/box/box_base.dart';
 part 'src/box/lazy_box.dart';

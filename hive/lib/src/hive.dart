@@ -27,6 +27,22 @@ abstract class HiveInterface implements TypeRegistry {
     @Deprecated('Use encryptionCipher instead') List<int>? encryptionKey,
   });
 
+  /// Opens an async box.
+  ///
+  /// If the box is already open, the instance is returned and all provided
+  /// parameters are being ignored.
+  Future<AsyncBox<E>> openAsyncBox<E>(
+    String name, {
+    HiveCipher? encryptionCipher,
+    KeyComparator keyComparator = defaultKeyComparator,
+    CompactionStrategy compactionStrategy = defaultCompactionStrategy,
+    bool crashRecovery = true,
+    String? path,
+    Uint8List? bytes,
+    String? collection,
+    @Deprecated('Use encryptionCipher instead') List<int>? encryptionKey,
+  });
+
   /// Opens a lazy box.
   ///
   /// If the box is already open, the instance is returned and all provided

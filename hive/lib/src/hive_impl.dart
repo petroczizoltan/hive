@@ -7,6 +7,7 @@ import 'package:hive/hive.dart';
 import 'package:hive/src/adapters/big_int_adapter.dart';
 import 'package:hive/src/adapters/date_time_adapter.dart';
 import 'package:hive/src/backend/storage_backend_memory.dart';
+import 'package:hive/src/box/async_box_impl.dart';
 import 'package:hive/src/box/box_base_impl.dart';
 import 'package:hive/src/box/box_impl.dart';
 import 'package:hive/src/box/default_compaction_strategy.dart';
@@ -61,6 +62,7 @@ class HiveImpl extends TypeRegistryImpl implements HiveInterface {
   Future<BoxBase<E>> _openBox<E>(
     String name,
     bool lazy,
+    bool async,
     HiveCipher? cipher,
     KeyComparator comparator,
     CompactionStrategy compaction,
@@ -104,6 +106,8 @@ class HiveImpl extends TypeRegistryImpl implements HiveInterface {
 
         if (lazy) {
           newBox = LazyBoxImpl<E>(this, name, comparator, compaction, backend);
+        } else if (async) {
+          newBox = AsyncBoxImpl<E>(this, name, comparator, compaction, backend);
         } else {
           newBox = BoxImpl<E>(this, name, comparator, compaction, backend);
         }
@@ -139,8 +143,45 @@ class HiveImpl extends TypeRegistryImpl implements HiveInterface {
     if (encryptionKey != null) {
       encryptionCipher = HiveAesCipher(encryptionKey);
     }
-    return await _openBox<E>(name, false, encryptionCipher, keyComparator,
-        compactionStrategy, crashRecovery, path, bytes, collection) as Box<E>;
+    return await _openBox<E>(
+        name,
+        false,
+        false,
+        encryptionCipher,
+        keyComparator,
+        compactionStrategy,
+        crashRecovery,
+        path,
+        bytes,
+        collection) as Box<E>;
+  }
+
+  @override
+  Future<AsyncBox<E>> openAsyncBox<E>(
+    String name, {
+    HiveCipher? encryptionCipher,
+    KeyComparator keyComparator = defaultKeyComparator,
+    CompactionStrategy compactionStrategy = defaultCompactionStrategy,
+    bool crashRecovery = true,
+    String? path,
+    Uint8List? bytes,
+    String? collection,
+    @Deprecated('Use encryptionCipher instead') List<int>? encryptionKey,
+  }) async {
+    if (encryptionKey != null) {
+      encryptionCipher = HiveAesCipher(encryptionKey);
+    }
+    return await _openBox<E>(
+        name,
+        false,
+        true,
+        encryptionCipher,
+        keyComparator,
+        compactionStrategy,
+        crashRecovery,
+        path,
+        bytes,
+        collection) as AsyncBox<E>;
   }
 
   @override
@@ -160,6 +201,7 @@ class HiveImpl extends TypeRegistryImpl implements HiveInterface {
     return await _openBox<E>(
         name,
         true,
+        false,
         encryptionCipher,
         keyComparator,
         compactionStrategy,
